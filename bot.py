@@ -1199,6 +1199,41 @@ async def balance_command(message: Message):
     except ValueError:
         await message.answer("❌ Неверный формат. Убедитесь, что ID и сумма — числа.")
 
+@dp.message(Command("sdel"))
+async def sdel_command(message: Message):
+    if message.from_user.id not in ADMIN_ID:
+        return
+
+    args = message.text.split()
+    if len(args) != 3:
+        await message.answer("❌ Использование: /sdel <user_id> <+число> или <-число>")
+        return
+
+    try:
+        user_id = int(args[1])
+        delta_str = args[2]
+        if not delta_str.startswith(('+', '-')):
+            await message.answer("❌ Сумма должна начинаться с + или -")
+            return
+        delta = int(delta_str)  # например "+5" -> 5, "-3" -> -3
+
+        if delta == 0:
+            await message.answer("❌ Дельта не может быть равна 0")
+            return
+
+        success = update_deals(user_id, delta)
+        if not success:
+            await message.answer(f"❌ У пользователя {user_id} недостаточно сделок для списания {abs(delta)}.")
+            return
+
+        # Получаем новое количество сделок для информации
+        cursor.execute("SELECT deals FROM wallets WHERE user_id=?", (user_id,))
+        new_deals = cursor.fetchone()[0]
+        await message.answer(f"✅ Количество сделок пользователя {user_id} изменено на {delta}. Теперь: {new_deals}")
+
+    except ValueError:
+        await message.answer("❌ Неверный формат. Убедитесь, что ID и дельта — числа.")
+        
 @dp.message(Command("msg"))
 async def msg_command(message: Message):
     if message.from_user.id not in ADMIN_ID:
