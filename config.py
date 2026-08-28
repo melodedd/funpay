@@ -1,0 +1,11 @@
+TOKEN = "8891087943:AAHszJAVO71WCCurKfoLGO3jrnjgpVPSLkw"
+
+# путь к видео
+VIDEO_PATH = "welcome.mp4"
+
+LOG_CHANNEL_ID = -1003801945595
+
+ADMIN_ID = [
+    8983109132,
+    8867741882
+]
