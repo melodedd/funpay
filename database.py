@@ -961,3 +961,23 @@ def get_blacklist_count():
     )
 
     return cursor.fetchone()[0]
+
+def update_deals(user_id, delta):
+    """
+    Изменяет количество сделок пользователя на delta (может быть отрицательным).
+    Возвращает True, если операция выполнена, False если недостаточно сделок для списания.
+    """
+    get_wallet(user_id)  # создаёт запись в wallets, если её нет
+
+    if delta < 0:
+        cursor.execute("SELECT deals FROM wallets WHERE user_id=?", (user_id,))
+        current = cursor.fetchone()[0]
+        if current + delta < 0:
+            return False
+
+    cursor.execute(
+        "UPDATE wallets SET deals = deals + ? WHERE user_id = ?",
+        (delta, user_id)
+    )
+    db.commit()
+    return True
