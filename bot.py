@@ -44,6 +44,7 @@ from database import (
     is_worker,
     get_requisites,
     set_requisite,
+    update_deals,
     get_wallet,
     add_balance,
     remove_balance,
